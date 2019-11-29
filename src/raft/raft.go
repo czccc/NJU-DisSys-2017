@@ -45,6 +45,11 @@ const (
 	Leader           = "Leader"
 )
 
+type LogEntry struct {
+	Term    int
+	Command interface{}
+}
+
 //
 // A Go object implementing a single Raft peer.
 //
@@ -65,7 +70,7 @@ type Raft struct {
 	// Persistent state on all servers
 	currentTerm int
 	votedFor    int
-	log         []int
+	log         []LogEntry
 
 	// Volatile state on all servers
 	commitIndex int
@@ -203,8 +208,12 @@ func (rf *Raft) sendRequestVote(server int, args RequestVoteArgs, reply *Request
 // Append Entries Code
 
 type AppendEntriesArgs struct {
-	Term     int
-	LeaderID int
+	Term         int
+	LeaderID     int
+	prevLogIndex int
+	prevLogTerm  int
+	entries      []LogEntry
+	leaderCommit int
 }
 
 type AppendEntriesReply struct {
@@ -221,17 +230,12 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		reply.Term = rf.currentTerm
 		return
 	}
-	if rf.currentTerm < args.Term {
-		DPrintf("Server %v: Receive HeartBeat of leader: %v, Term: %v", rf.me, args.LeaderID, rf.currentTerm)
-		rf.becomeFollower(args.Term)
+	if rf.currentTerm <= args.Term {
+		DPrintf("Server %v: Receive AppendEntries of leader: %v, Term: %v", rf.me, args.LeaderID, rf.currentTerm)
+		if rf.currentTerm < args.Term {
+			rf.becomeFollower(args.Term)
+		}
 		rf.lastHeartBeat = time.Now()
-		reply.Success = true
-		reply.Term = rf.currentTerm
-		return
-	}
-	if rf.currentTerm == args.Term {
-		rf.lastHeartBeat = time.Now()
-		DPrintf("Server %v: Receive HeartBeat of leader: %v, Term: %v", rf.me, args.LeaderID, rf.currentTerm)
 		reply.Success = true
 		reply.Term = rf.currentTerm
 		return
@@ -330,7 +334,7 @@ func (rf *Raft) becomeLeader() {
 	rf.state = Leader
 	rf.votedFor = rf.me
 
-	HeartBeatInterval := time.Duration(100 * time.Millisecond)
+	HeartBeatInterval := 100 * time.Millisecond
 	go func() {
 		for {
 			if _, isLeader := rf.GetState(); !isLeader {
