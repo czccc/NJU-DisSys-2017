@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="lab1" type="GoTestRunConfiguration" factoryName="Go Test" singleton="false">
+    <module name="NJU-DisSys-2017" />
+    <working_directory value="$PROJECT_DIR$/src/raft" />
+    <go_parameters value="-i" />
+    <framework value="gotest" />
+    <kind value="PACKAGE" />
+    <package value="raft" />
+    <directory value="$PROJECT_DIR$/" />
+    <filePath value="$PROJECT_DIR$/" />
+    <pattern value="Lab1" />
+    <method v="2" />
+  </configuration>
+</component>
