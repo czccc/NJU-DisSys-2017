@@ -1,0 +1,17 @@
+{
+    "go.gopath": "${workspaceFolder}",
+    "go.testFlags": [
+        "-v"
+    ],
+    "go.testEnvVars": {
+        "GOPATH": "${workspaceFolder}"
+    },
+    "goOutliner.enableDebugChannel": true,
+    "goOutliner.extendExplorerTab": true,
+    "go.testOnSave": false,
+    "go.formatTool": "gofmt",
+    "editor.formatOnSave": true,
+    "code-runner.clearPreviousOutput": true,
+    "code-runner.runInTerminal": true,
+    "code-runner.fileDirectoryAsCwd": true
+}
