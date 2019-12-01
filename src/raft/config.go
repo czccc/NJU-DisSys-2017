@@ -394,6 +394,7 @@ func (cfg *config) one(cmd int, expectedServers int) int {
 			}
 			cfg.mu.Unlock()
 			if rf != nil {
+				DPrintf("Send Command to Server %v", starts)
 				index1, _, ok := rf.Start(cmd)
 				if ok {
 					index = index1
@@ -408,6 +409,7 @@ func (cfg *config) one(cmd int, expectedServers int) int {
 			t1 := time.Now()
 			for time.Since(t1).Seconds() < 2 {
 				nd, cmd1 := cfg.nCommitted(index)
+				// fmt.Printf("Commit Count : %v of cmd : %v\n", nd, cmd1)
 				if nd > 0 && nd >= expectedServers {
 					// committed
 					if cmd2, ok := cmd1.(int); ok && cmd2 == cmd {
